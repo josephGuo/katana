@@ -157,6 +157,8 @@ HEADLESS:
    -noi, -no-incognito               start headless chrome without incognito mode
    -cwu, -chrome-ws-url string       use chrome browser instance launched elsewhere with the debugger listening at this URL
    -xhr, -xhr-extraction             extract xhr request url,method in jsonl output
+   -csp, -captcha-solver-provider string  captcha solver provider (e.g. capsolver)
+   -csk, -captcha-solver-key string       captcha solver provider api key
 
 SCOPE:
    -cs, -crawl-scope string[]       in scope url regex to be followed by crawler
@@ -330,6 +332,8 @@ HEADLESS:
    -noi, -no-incognito               start headless chrome without incognito mode
    -cwu, -chrome-ws-url string       use chrome browser instance launched elsewhere with the debugger listening at this URL
    -xhr, -xhr-extraction             extract xhr requests
+   -csp, -captcha-solver-provider string  captcha solver provider (e.g. capsolver)
+   -csk, -captcha-solver-key string       captcha solver provider api key
 ```
 
 *`-no-sandbox`*
@@ -360,6 +364,34 @@ When crawling in headless mode, additional chrome options can be specified using
 katana -u https://tesla.com -headless -system-chrome -headless-options --disable-gpu,proxy-server=http://127.0.0.1:8080
 ```
 
+
+### Captcha Solving
+
+Katana supports automatic captcha detection and solving during headless crawling. When a captcha page is encountered, katana identifies the captcha provider, solves it via an external service, and continues crawling.
+
+Supported captcha types: **reCAPTCHA v2**, **reCAPTCHA v3**, **reCAPTCHA Enterprise**, **Cloudflare Turnstile**, **hCaptcha**
+
+*`-captcha-solver-provider`*
+----
+
+Option to specify the captcha solver provider. Currently supported: `capsolver`.
+
+*`-captcha-solver-key`*
+----
+
+API key for the captcha solver provider.
+
+```console
+katana -u https://example.com -headless -csp capsolver -csk YOUR_API_KEY
+```
+
+The provider and key can also be set via environment variables:
+
+```console
+export CAPTCHA_SOLVER_PROVIDER=capsolver
+export CAPTCHA_SOLVER_KEY=YOUR_API_KEY
+katana -u https://example.com -headless
+```
 
 ## Scope Control
 

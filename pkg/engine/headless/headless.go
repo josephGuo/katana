@@ -7,7 +7,10 @@ import (
 	"time"
 
 	"github.com/lmittmann/tint"
+	"github.com/projectdiscovery/gologger"
 	"github.com/projectdiscovery/katana/pkg/engine/headless/browser"
+	"github.com/projectdiscovery/katana/pkg/engine/headless/captcha"
+	_ "github.com/projectdiscovery/katana/pkg/engine/headless/captcha/capsolver"
 	"github.com/projectdiscovery/katana/pkg/engine/headless/crawler"
 	"github.com/projectdiscovery/katana/pkg/engine/parser"
 	"github.com/projectdiscovery/katana/pkg/output"
@@ -107,6 +110,7 @@ func (h *Headless) Crawl(URL string) error {
 		MaxCrawlDuration:  h.options.Options.CrawlDuration,
 		MaxFailureCount:   h.options.Options.MaxFailureCount,
 		NoSandbox:         h.options.Options.HeadlessNoSandbox,
+		Proxy:             h.options.Options.Proxy,
 		MaxBrowsers:       1,
 		PageMaxTimeout:    30 * time.Second,
 		ScopeValidator:    scopeValidator,
@@ -148,6 +152,16 @@ func (h *Headless) Crawl(URL string) error {
 		EnableDiagnostics:   h.options.Options.EnableDiagnostics,
 		Trace:               h.options.Options.EnableDiagnostics,
 		CookieConsentBypass: true,
+	}
+
+	if provider := h.options.Options.CaptchaSolverProvider; provider != "" {
+		gologger.Debug().Msgf("captcha solver enabled: provider=%s", provider)
+		handler, err := captcha.NewHandler(provider, h.options.Options.CaptchaSolverAPIKey)
+		if err != nil {
+			gologger.Warning().Msgf("captcha handler init failed: %s", err)
+		} else {
+			crawlOpts.CaptchaHandler = handler
+		}
 	}
 
 	// TODO: Make the crawling multi-threaded. Right now concurrency is hardcoded to 1.

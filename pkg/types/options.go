@@ -185,7 +185,9 @@ type Options struct {
 	// DisableUniqueFilter disables duplicate content filtering
 	DisableUniqueFilter bool
 	// MaxOnclickLinks is the maximum number of onclick links to process per page (default: 10)
-	MaxOnclickLinks int
+	MaxOnclickLinks       int
+	CaptchaSolverProvider string
+	CaptchaSolverAPIKey   string
 }
 
 func (options *Options) ParseCustomHeaders() map[string]string {
